@@ -1,0 +1,494 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   ROOT VARIABLES
+   ======================================== */
+:root {
+  --pink: #FF2D92;
+  --cyan: #00F0FF;
+  --green: #00FF94;
+  --yellow: #FFE14D;
+  --purple: #B14EFF;
+  --blue: #4D9FFF;
+  --red: #FF4D6A;
+  
+  --bg-primary: #0A0A0F;
+  --bg-secondary: #12121A;
+  --bg-tertiary: #1A1A24;
+  --bg-card: #15151F;
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0B0;
+  --text-muted: #606070;
+  
+  --border-dim: #2A2A3A;
+  --border-bright: #3A3A4A;
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+/* Ambient background glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(255, 45, 146, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 80%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(177, 78, 255, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pink);
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ========================================
+   CARD STYLES
+   ======================================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  position: relative;
+}
+
+.card-glow {
+  box-shadow: 
+    0 0 0 1px var(--border-dim),
+    0 4px 24px -4px rgba(0, 0, 0, 0.5),
+    0 0 40px -20px var(--pink);
+}
+
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+.btn-primary {
+  background: var(--pink);
+  color: white;
+  font-weight: 700;
+  border: none;
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 20px rgba(255, 45, 146, 0.4);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #FF4DA6;
+  box-shadow: 0 0 30px rgba(255, 45, 146, 0.6);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: #E6007F;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* NO ROUNDED CORNERS - SHARP GEOMETRIC */
+.btn-primary,
+.btn-secondary,
+.card,
+.input-field,
+.network-toggle,
+.network-btn,
+.badge,
+.progress-bar,
+.filter-tabs,
+.filter-tab,
+.section-icon,
+.skeleton,
+.toast {
+  border-radius: 0 !important;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 240, 255, 0.05);
+}
+
+/* ========================================
+   INPUT STYLES
+   ======================================== */
+.input-field {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-dim);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px rgba(255, 45, 146, 0.15);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* ========================================
+   NETWORK TOGGLE
+   ======================================== */
+.network-toggle {
+  display: flex;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-dim);
+  padding: 4px;
+  gap: 4px;
+}
+
+.network-btn {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.network-btn:hover:not(.active) {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+}
+
+.network-btn.active {
+  color: var(--bg-primary);
+  font-weight: 700;
+}
+
+.network-btn.active.mainnet {
+  background: var(--green);
+  box-shadow: 0 0 20px rgba(0, 255, 148, 0.3);
+}
+
+.network-btn.active.devnet {
+  background: var(--yellow);
+  box-shadow: 0 0 20px rgba(255, 225, 77, 0.3);
+}
+
+/* ========================================
+   STATUS BADGES
+   ======================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.1em;
+}
+
+.badge-success {
+  background: rgba(0, 255, 148, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(0, 255, 148, 0.3);
+}
+
+.badge-error {
+  background: rgba(255, 77, 106, 0.15);
+  color: var(--red);
+  border: 1px solid rgba(255, 77, 106, 0.3);
+}
+
+.badge-warning {
+  background: rgba(255, 225, 77, 0.15);
+  color: var(--yellow);
+  border: 1px solid rgba(255, 225, 77, 0.3);
+}
+
+.badge-info {
+  background: rgba(0, 240, 255, 0.15);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+/* ========================================
+   PROGRESS BAR
+   ======================================== */
+.progress-bar {
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-dim);
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+  border-radius: 3px;
+}
+
+.progress-fill.low {
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+}
+
+.progress-fill.medium {
+  background: linear-gradient(90deg, var(--green), var(--yellow));
+}
+
+.progress-fill.high {
+  background: linear-gradient(90deg, var(--yellow), var(--red));
+}
+
+/* ========================================
+   LOG ENTRY STYLES
+   ======================================== */
+.log-entry {
+  animation: slideIn 0.3s ease forwards;
+  opacity: 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.log-type-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Depth colors */
+.depth-0 { border-left-color: var(--cyan); }
+.depth-1 { border-left-color: var(--pink); }
+.depth-2 { border-left-color: var(--yellow); }
+.depth-3 { border-left-color: var(--green); }
+.depth-4 { border-left-color: var(--purple); }
+
+/* ========================================
+   FILTER TABS
+   ======================================== */
+.filter-tabs {
+  display: flex;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-dim);
+  padding: 4px;
+  gap: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.filter-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-tab {
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.filter-tab:hover:not(.active) {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+}
+
+.filter-tab.active {
+  color: var(--text-primary);
+  background: var(--pink);
+}
+
+.filter-tab .count {
+  opacity: 0.6;
+  margin-left: 4px;
+}
+
+/* ========================================
+   SECTION HEADER
+   ======================================== */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-dim);
+}
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+.section-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ========================================
+   SKELETON LOADING
+   ======================================== */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* ========================================
+   TOAST
+   ======================================== */
+.toast {
+  animation: toastIn 0.3s ease forwards;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ========================================
+   CODE/TERMINAL TEXT
+   ======================================== */
+.code-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.text-pink { color: var(--pink); }
+.text-cyan { color: var(--cyan); }
+.text-green { color: var(--green); }
+.text-yellow { color: var(--yellow); }
+.text-purple { color: var(--purple); }
+.text-blue { color: var(--blue); }
+.text-red { color: var(--red); }
+
+.bg-pink { background-color: var(--pink); }
+.bg-cyan { background-color: var(--cyan); }
+.bg-green { background-color: var(--green); }
+.bg-yellow { background-color: var(--yellow); }
+
+.glow-pink { box-shadow: 0 0 20px rgba(255, 45, 146, 0.4); }
+.glow-cyan { box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
+.glow-green { box-shadow: 0 0 20px rgba(0, 255, 148, 0.4); }

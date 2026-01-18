@@ -1,0 +1,27 @@
+{
+  "name": "SOLXLOG - Solana Transaction Explorer",
+  "short_name": "SOLXLOG",
+  "description": "Debug Solana transactions with clarity. Analyze execution flow, compute usage, and errors in a structured timeline view.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0F",
+  "theme_color": "#FF2D92",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
