@@ -272,9 +272,9 @@ function TransactionInputCard({
             <div className={`card p-5 border ${loaded ? `border-[var(--${color})]/50` : 'border-[var(--border-bright)]'}`}>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Header */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className={`w-8 h-8 flex items-center justify-center bg-[var(--${color})]/10 border border-[var(--${color})]/30 text-[var(--${color})] font-mono font-bold text-sm`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`w-8 h-8 flex items-center justify-center bg-[var(--${color})]/10 border border-[var(--${color})]/30 text-[var(--${color})] font-mono font-bold text-sm flex-shrink-0`}>
                                 {slot}
                             </span>
                             <span className="font-display font-bold text-white">
