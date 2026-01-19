@@ -16,6 +16,7 @@ function App() {
 
   const handleSubmit = useCallback(async (signature: string, selectedNetwork: Network) => {
     reset();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     try {
       await fetch(signature, selectedNetwork);
     } catch (err) {
