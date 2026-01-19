@@ -105,6 +105,191 @@ export interface RpcConfig {
     endpoint: string;
 }
 
+// ============================================
+// Comparison Types
+// ============================================
+
+// Diff status for each item
+export type DiffStatus = 'same' | 'different' | 'only_a' | 'only_b';
+
+// Log diff entry
+export interface LogDiffEntry {
+    status: DiffStatus;
+    logA?: ParsedLog;
+    logB?: ParsedLog;
+    index: number;
+}
+
+// Invocation diff entry
+export interface InvocationDiffEntry {
+    status: DiffStatus;
+    invocationA?: ProgramInvocation;
+    invocationB?: ProgramInvocation;
+    programId: string;
+    depth: number;
+    children: InvocationDiffEntry[];
+}
+
+// Compute stats diff
+export interface ComputeStatsDiff {
+    totalConsumedA: number;
+    totalConsumedB: number;
+    totalConsumedDiff: number;
+    totalConsumedDiffPercent: number;
+    totalBudgetA: number;
+    totalBudgetB: number;
+    programDiffs: {
+        programId: string;
+        consumedA: number;
+        consumedB: number;
+        diff: number;
+        status: DiffStatus;
+    }[];
+}
+
+// Summary of differences
+export interface ComparisonSummary {
+    statusA: 'success' | 'failure';
+    statusB: 'success' | 'failure';
+    statusMatch: boolean;
+    computeDiff: ComputeStatsDiff;
+    totalLogDifferences: number;
+    firstDivergenceIndex: number | null;
+    programsOnlyInA: string[];
+    programsOnlyInB: string[];
+    programsInBoth: string[];
+}
+
+// Full comparison result
+export interface ComparisonResult {
+    transactionA: ParsedTransaction;
+    transactionB: ParsedTransaction;
+    summary: ComparisonSummary;
+    logDiff: LogDiffEntry[];
+    invocationDiff: InvocationDiffEntry[];
+}
+
+// Transaction slot for comparison (A or B)
+export type TransactionSlot = 'A' | 'B';
+
+// Comparison state
+export interface ComparisonState {
+    transactionA: FetchState<ParsedTransaction>;
+    transactionB: FetchState<ParsedTransaction>;
+    comparison: ComparisonResult | null;
+}
+
+// ============================================
+// Account Diff Types
+// ============================================
+
+// SOL balance change
+export interface SolChange {
+    before: number; // in lamports
+    after: number;
+    diff: number;
+}
+
+// Token balance change
+export interface TokenChange {
+    mint: string;
+    symbol?: string;
+    before: number;
+    after: number;
+    diff: number;
+    decimals: number;
+    owner: string;
+}
+
+// Account type classification
+export type AccountType = 'wallet' | 'token_account' | 'program' | 'pda' | 'system' | 'unknown';
+
+// Single account change
+export interface AccountChange {
+    address: string;
+    index: number;
+    isSigner: boolean;
+    isWritable: boolean;
+    isFeePayer: boolean;
+    accountType: AccountType;
+    label?: string; // e.g., "Fee Payer", "Token Program"
+    solChange: SolChange | null;
+    tokenChanges: TokenChange[];
+    dataChanged: boolean;
+    isNew: boolean; // Account was created in this tx
+    isClosed: boolean; // Account was closed in this tx
+}
+
+// Summary of account changes
+export interface AccountDiffSummary {
+    totalAccounts: number;
+    accountsModified: number;
+    solTransferred: number; // in SOL (not lamports)
+    tokenTransfers: number;
+    accountsCreated: number;
+    accountsClosed: number;
+}
+
+// Full account diff result
+export interface AccountDiffResult {
+    signature: string;
+    slot: number;
+    blockTime?: number;
+    success: boolean;
+    fee: number;
+    accounts: AccountChange[];
+    summary: AccountDiffSummary;
+}
+
+// Filter options for account diff view
+export type AccountDiffFilter = 'all' | 'changed' | 'sol' | 'tokens' | 'created';
+
+// ============================================
+// Error Decoder Types
+// ============================================
+
+// Error category based on Anchor's numbering scheme
+export type ErrorCategory =
+    | 'solana_builtin'      // 0-99
+    | 'anchor_instruction'  // 100-999
+    | 'anchor_idl'          // 1000-1999
+    | 'anchor_constraint'   // 2000-2999
+    | 'anchor_account'      // 3000-4099
+    | 'anchor_misc'         // 4100-4999
+    | 'anchor_deprecated'   // 5000
+    | 'custom_program';     // 6000+
+
+// Decoded error result
+export interface DecodedError {
+    code: number;
+    hex: string;
+    category: ErrorCategory;
+    categoryLabel: string;
+    name?: string;
+    message?: string;
+    suggestion?: string;
+    range: string;
+}
+
+// Error entry in database
+export interface ErrorEntry {
+    code: number;
+    name: string;
+    message?: string;
+    suggestion?: string;
+}
+
+// Anchor IDL structure (partial - only what we need for errors)
+export interface AnchorIdl {
+    name?: string;
+    version?: string;
+    errors?: Array<{
+        code: number;
+        name: string;
+        msg?: string;
+    }>;
+}
+
 // Get Alchemy API key from environment
 const ALCHEMY_API_KEY = import.meta.env.VITE_ALCHEMY_API_KEY || '';
 

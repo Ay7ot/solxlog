@@ -1,26 +1,29 @@
-# Product: Solana Log Explorer
+# Product: SolXLog - Solana Transaction Tools
 
 ## Overview
 
-Solana Log Explorer is a lightweight, open-source web tool that helps developers **understand Solana transaction logs**, not just view them.
+SolXLog is a lightweight, open-source web tool that helps Solana developers **debug and analyze transactions** through four core features:
 
-Instead of dumping raw log text, the tool structures logs into a readable timeline, highlights errors and compute usage, and visualizes program invocation depth.
+1. **Log Explorer** - View and analyze a single transaction's execution flow
+2. **Transaction Compare** - Diff two transactions side-by-side to identify differences
+3. **Account Diff** - See exactly what changed in each account after a transaction
+4. **Error Decoder** - Decode cryptic error codes into human-readable explanations
 
-The goal is simple: make Solana debugging less painful.
+The goal is simple: make Solana debugging faster and more intuitive.
 
 ---
 
 ## Problem Statement
 
-Solana transaction logs are:
-- Flat text
-- Extremely noisy
-- Hard to scan
-- Difficult to associate with instruction execution
+When debugging Solana transactions, developers often need to:
+- Understand why a transaction failed
+- Compare a failing transaction against a working one
+- Identify what changed between two program versions
+- Debug differences between devnet and mainnet execution
+- See what accounts changed and by how much (SOL, tokens)
+- Decode cryptic error codes like `0x1771` into meaningful explanations
 
-Most existing explorers display logs verbatim with minimal structure, forcing developers to manually trace execution flow and errors.
-
-This slows down debugging and increases cognitive load during development.
+While Solana Explorer shows structured logs and accounts involved, it doesn't clearly show **what changed** in each account or help decode error messages. Developers often ask "Did my transaction actually update the data?", "How much SOL moved where?", or "What does error 0xbbf mean?"
 
 ---
 
@@ -28,66 +31,111 @@ This slows down debugging and increases cognitive load during development.
 
 - Solana program developers
 - Engineers debugging Anchor or native Solana programs
-- Auditors and contributors reviewing transaction behavior
-- Developers learning how Solana executes instructions
-
-This tool is **not** intended to be a full block explorer.
+- Auditors reviewing transaction behavior
+- Developers comparing before/after deployments
 
 ---
 
-## Core Use Case
+## Core Features
 
-A developer pastes a Solana transaction signature and immediately sees:
-- Which programs were invoked
-- The execution order and nesting
-- Where logs came from
-- Where compute units were consumed
-- Why the transaction failed (if it did)
+### Feature 1: Log Explorer
 
----
+A single transaction viewer with structured logs.
 
-## MVP Features
-
-### 1. Transaction Log Parsing
+**Capabilities:**
 - Fetch transaction data using `getTransaction`
-- Extract `meta.logMessages`
-- Parse logs into structured entries
+- Parse logs into structured timeline
+- Group logs by program invocation with depth tracking
+- Color-coded log types (invoke, success, failure, compute)
+- Compute unit insights per instruction
+- Error summary with failing program identification
 
-### 2. Structured Log Timeline
-- Group logs by program invocation
-- Track invocation depth using invoke / success / failure signals
-- Display nested calls with indentation or collapsible sections
+### Feature 2: Transaction Compare (New)
 
-### 3. Log Type Highlighting
-Logs are categorized and visually distinguished:
-- Program invocation logs
-- `Program log:` output
-- Success messages
-- Failure and error messages
-- Compute unit usage logs
+Side-by-side comparison of two transactions.
 
-### 4. Compute Unit Insights
-- Extract compute unit consumption per instruction
-- Display remaining compute budget
-- Surface potential compute-related failures
+**Capabilities:**
+- Load two transactions independently (can be from different networks)
+- Comparison summary showing:
+  - Status differences (success vs failure)
+  - Compute unit changes (+/- with percentage)
+  - Programs unique to each transaction
+  - First point of log divergence
+- Side-by-side invocation tree diff
+- Line-by-line log diff with:
+  - Color-coded differences (same, changed, only in A, only in B)
+  - Collapsible matching sections
+  - Filter by difference type
+- Shareable URLs via query parameters (`?txA=...&txB=...`)
 
-### 5. Error Summary
-- Show final error prominently
-- Identify the instruction index and program responsible
-- Avoid burying critical information in raw logs
+**Use Cases:**
+- Compare failing vs working transaction
+- Compare before/after a program upgrade
+- Compare devnet simulation vs mainnet execution
+- Identify compute unit regressions
 
----
+### Feature 3: Account State Diff
 
-## Non-Goals (Explicitly Out of Scope)
+Visual breakdown of what changed in each account.
 
-- Wallet connections
-- Authentication
-- User accounts
-- Token balances and analytics
-- Full block explorer functionality
-- AI-powered explanations
+**Capabilities:**
+- Show all accounts involved in a transaction
+- Display SOL balance changes (before → after with diff)
+- Display token balance changes with symbol resolution
+- Identify account creation and closure
+- Classify accounts (wallet, token account, program, PDA)
+- Label known accounts (fee payer, signers, known programs)
+- Filter by change type (all, changed, SOL, tokens, created)
+- Summary statistics (accounts modified, SOL transferred, token transfers)
 
-This tool focuses strictly on logs and execution flow.
+**Data Sources:**
+- `meta.preBalances` / `meta.postBalances` for SOL changes
+- `meta.preTokenBalances` / `meta.postTokenBalances` for token changes
+- `transaction.message.accountKeys` for account list
+
+**Use Cases:**
+- Verify a transfer actually moved funds
+- Debug why an account wasn't created
+- Track token movements through a swap
+- Understand fee distribution
+
+### Feature 4: Error Decoder
+
+Decode cryptic Solana error codes into human-readable explanations.
+
+**Capabilities:**
+- Parse error codes from multiple formats:
+  - Hex codes (`0x1771`)
+  - Decimal codes (`6001`)
+  - Full error messages (`custom program error: 0x1771`)
+- Built-in error database for:
+  - Solana ProgramError (0-99)
+  - Anchor instruction errors (100-999)
+  - Anchor constraint errors (2000-2999)
+  - Anchor account errors (3000-4099)
+  - Anchor misc errors (4100-4999)
+- Category detection based on Anchor's numbering scheme
+- IDL upload for custom program errors (6000+)
+- Fix suggestions for common errors
+- Quick reference table of common errors
+
+**Error Code Ranges:**
+| Range | Category |
+|-------|----------|
+| 0-99 | Solana built-in ProgramError |
+| 100-999 | Anchor instruction errors |
+| 1000-1999 | Anchor IDL errors |
+| 2000-2999 | Anchor constraint errors |
+| 3000-4099 | Anchor account errors |
+| 4100-4999 | Anchor misc errors |
+| 5000 | Deprecated |
+| 6000+ | Custom program errors (user-defined) |
+
+**Use Cases:**
+- Quickly decode `0x1771` without manual hex conversion
+- Understand Anchor constraint violations
+- Look up Solana built-in errors
+- Decode custom program errors with IDL upload
 
 ---
 
@@ -95,72 +143,83 @@ This tool focuses strictly on logs and execution flow.
 
 ### Frontend
 - Vite + React
-- Tailwind CSS or simple CSS modules
+- React Router for navigation
+- Tailwind CSS
 - Pure client-side rendering
 
 ### Solana Integration
 - `@solana/web3.js`
-- Public RPC endpoints
+- Public RPC endpoints (configurable)
 - No backend or database
 
-### Log Processing
-- Regex-based log classification
-- Invocation depth tracking via a call stack
-- Normalized internal log schema
+### Comparison Engine
+- Log diff using lookahead matching algorithm
+- Invocation tree diff with recursive comparison
+- Compute stats aggregation and delta calculation
 
 ---
 
-## Data Flow
+## Routes
 
-1. User submits a transaction signature
-2. App fetches transaction data from Solana RPC
-3. Raw logs are parsed and normalized
-4. Structured logs are rendered as a timeline
-5. Errors and compute usage are summarized
+- `/` - Log Explorer (single transaction viewer)
+- `/compare` - Transaction Compare (side-by-side diff)
+- `/accounts` - Account State Diff (what changed in each account)
+- `/decode` - Error Decoder (decode error codes)
+
+---
+
+## URL Parameters
+
+### Explorer Page
+- `tx` or `signature` - Transaction signature
+- `network` - Network (`mainnet-beta` or `devnet`)
+
+### Compare Page
+- `txA` - Transaction A signature
+- `txB` - Transaction B signature
+- `netA` - Network for A (defaults to mainnet-beta)
+- `netB` - Network for B (defaults to mainnet-beta)
+
+### Accounts Page
+- `tx` - Transaction signature
+- `network` - Network (`mainnet-beta` or `devnet`)
+
+---
+
+## Non-Goals (Out of Scope)
+
+- Wallet connections
+- Authentication or user accounts
+- Token balances and analytics
+- Full block explorer functionality
+- AI-powered explanations
+- Transaction simulation/building
 
 ---
 
 ## Open Source Strategy
 
 - MIT License
-- No telemetry
-- No tracking
+- No telemetry or tracking
 - Contributions welcome via pull requests
-- Clear README with usage examples and limitations
-
----
-
-## Limitations
-
-- Dependent on RPC availability and rate limits
-- Logs are only as accurate as on-chain output
-- Some compute data may vary by transaction version
-- Program ID search is not included in MVP
 
 ---
 
 ## Future Enhancements (Optional)
 
-- Program ID filtering
-- Search within logs
-- Shareable URLs with query parameters
-- Export logs as JSON
-- Support for program-based recent transaction lookup
+- Export comparison as JSON/PDF
+- Compare more than two transactions
+- Program ID filtering in compare view
+- Saved comparisons (local storage)
+- Diff highlighting in raw log view
+- Mobile-optimized compare layout
 
 ---
 
 ## Success Criteria
 
 The product is successful if:
-- Developers can identify errors faster than with existing explorers
-- Execution flow is understandable at a glance
-- The tool is usable without documentation
-- Developers bookmark it for repeated use
-
----
-
-## Summary
-
-Solana Log Explorer improves the developer experience by adding structure, clarity, and focus to Solana transaction logs.
-
-It does one thing well: helping developers debug faster.
+- Developers can identify why one transaction failed vs another
+- Compare feature is bookmarked for repeated debugging sessions
+- Time to identify root cause is reduced vs manual comparison
+- Zero setup required - paste signatures and compare immediately
